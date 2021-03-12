@@ -1,7 +1,7 @@
 <div align="center">
   <h1>Core ❤️ Go Kit</h1>
   <p>
-    <strong>This repository hosts packages for Go Kit integration for package <a href="github.com/DoNewsCode/core">Core</a>.</strong>
+    <strong>This repository hosts packages for Go Kit integration for package <a href="https://github.com/DoNewsCode/core">Core</a>.</strong>
   </p>
   <p>
 
