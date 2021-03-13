@@ -1,7 +1,7 @@
 package kits3
 
 import (
-	"github.com/DoNewsCode/core/otkafka"
+	"github.com/DoNewsCode/core/ots3"
 	"net/http"
 	"testing"
 
@@ -13,7 +13,7 @@ import (
 func TestModule(t *testing.T) {
 	c := core.New(core.WithInline("s3.default.accessKey", ""))
 	c.ProvideEssentials()
-	c.Provide(otkafka.Providers())
+	c.Provide(ots3.Providers())
 	c.AddModuleFunc(New)
 	router := mux.NewRouter()
 	c.ApplyRouter(router)

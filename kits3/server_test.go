@@ -4,6 +4,8 @@ package kits3
 
 import (
 	"context"
+	"github.com/DoNewsCode/core/ots3"
+	"github.com/opentracing/opentracing-go"
 	"net"
 	"net/http"
 	"net/url"
@@ -38,4 +40,21 @@ func TestServer(t *testing.T) {
 	urlStr, err := uploader.Upload(context.Background(), "foo", strings.NewReader("bar"))
 	assert.NoError(t, err)
 	assert.NotEmpty(t, urlStr)
+}
+
+func setupManager() *ots3.Manager {
+	return setupManagerWithTracer(nil)
+}
+
+func setupManagerWithTracer(tracer opentracing.Tracer) *ots3.Manager {
+	m := ots3.NewManager(
+		"Q3AM3UQ867SPQQA43P2F",
+		"zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+		"https://play.minio.io:9000",
+		"asia",
+		"mybucket",
+		ots3.WithTracer(tracer),
+	)
+	_ = m.CreateBucket(context.Background(), "mybucket")
+	return m
 }
