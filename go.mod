@@ -3,7 +3,7 @@ module github.com/DoNewsCode/core-kit
 go 1.16
 
 require (
-	github.com/DoNewsCode/core v0.3.1-0.20210312105508-222799e32792
+	github.com/DoNewsCode/core v0.4.0.alpha.1
 	github.com/go-kit/kit v0.10.0
 	github.com/go-redis/redis/v8 v8.6.0
 	github.com/golang/protobuf v1.4.3
