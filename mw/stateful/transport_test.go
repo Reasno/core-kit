@@ -2,6 +2,7 @@ package stateful
 
 import (
 	"context"
+	"github.com/DoNewsCode/core/dtx"
 	"net/http"
 	"testing"
 
@@ -14,7 +15,7 @@ func TestHTTPToContext(t *testing.T) {
 	// When the header doesn't exist
 	ctx := reqFunc(context.Background(), &http.Request{})
 
-	if ctx.Value(CorrelationID) != nil {
+	if ctx.Value(dtx.CorrelationID) != nil {
 		t.Error("Context shouldn't contain the CorrelationID")
 	}
 
@@ -23,7 +24,7 @@ func TestHTTPToContext(t *testing.T) {
 	head.Set(header, "foobar")
 	ctx = reqFunc(context.Background(), &http.Request{Header: head})
 
-	token := ctx.Value(CorrelationID).(string)
+	token := ctx.Value(dtx.CorrelationID).(string)
 	if token != "foobar" {
 		t.Errorf("Context doesn't contain the expected encoded token value; expected: %s, got: %s", "foobar", token)
 	}
@@ -43,7 +44,7 @@ func TestContextToHTTP(t *testing.T) {
 	}
 
 	// Correct JWT Token is passed in the context
-	ctx = context.WithValue(context.Background(), CorrelationID, "foobar")
+	ctx = context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 	r = http.Request{Header: http.Header{}}
 	reqFunc(ctx, &r)
 
@@ -61,14 +62,14 @@ func TestGRPCToContext(t *testing.T) {
 
 	// No Authorization header is passed
 	ctx := reqFunc(context.Background(), md)
-	token := ctx.Value(CorrelationID)
+	token := ctx.Value(dtx.CorrelationID)
 	if token != nil {
 		t.Error("Context should not contain a correlation ID")
 	}
 
 	md[headerHTTP2] = []string{"foobar"}
 	ctx = reqFunc(context.Background(), md)
-	token, ok := ctx.Value(CorrelationID).(string)
+	token, ok := ctx.Value(dtx.CorrelationID).(string)
 	if !ok {
 		t.Fatal("Correlation ID not passed to context correctly")
 	}
@@ -92,7 +93,7 @@ func TestContextToGRPC(t *testing.T) {
 	}
 
 	// Correct JWT Token is passed in the context
-	ctx = context.WithValue(context.Background(), CorrelationID, "foobar")
+	ctx = context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 	md = metadata.MD{}
 	reqFunc(ctx, &md)
 

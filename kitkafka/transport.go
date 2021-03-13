@@ -119,9 +119,7 @@ func (s *SubscriberServer) serveSync(ctx context.Context) error {
 					}
 				}
 
-				// when using sync commit, the commit cannot be cancelled by original context.
-				// Intentionally creates a new context here.
-				err = s.reader.CommitMessages(context.Background(), msg)
+				err = s.reader.CommitMessages(ctx, msg)
 
 				// retry commit
 				for err != nil {
@@ -129,7 +127,7 @@ func (s *SubscriberServer) serveSync(ctx context.Context) error {
 					<-time.After(d)
 					select {
 					case <-time.After(d):
-						err = s.reader.CommitMessages(context.Background(), msg)
+						err = s.reader.CommitMessages(ctx, msg)
 					case <-ctx.Done():
 						return ctx.Err()
 					}

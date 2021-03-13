@@ -2,6 +2,7 @@ package stateful
 
 import (
 	"context"
+	"github.com/DoNewsCode/core/dtx"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -73,7 +74,7 @@ func TestMakeIdempotence(t *testing.T) {
 		}
 		m := MakeIdempotence(oncer(s))
 		f := m(ep)
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 		resp, err := f(ctx, 1)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, resp)
@@ -111,7 +112,7 @@ func TestMakeLock(t *testing.T) {
 		}
 		m := MakeLock(lock)
 		f := m(ep)
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 		resp, err := f(ctx, 1)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, resp)
@@ -128,7 +129,7 @@ func TestMakeLock(t *testing.T) {
 		}
 		m := MakeLock(lock)
 		f := m(ep)
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 
 		resp, err := f(ctx, 2)
 		assert.Error(t, err)
@@ -159,7 +160,7 @@ func TestMakeAttempt(t *testing.T) {
 
 	t.Run("with context, attempted", func(t *testing.T) {
 		t.Parallel()
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 		var tr = transactioner{
 			attempt: func(ctx context.Context, key string) bool {
 				return true
@@ -182,7 +183,7 @@ func TestMakeAttempt(t *testing.T) {
 
 	t.Run("with context, not attempted", func(t *testing.T) {
 		t.Parallel()
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 		var tr = transactioner{
 			attempt: func(ctx context.Context, key string) bool {
 				return false
@@ -205,7 +206,7 @@ func TestMakeAttempt(t *testing.T) {
 
 	t.Run("with context, cancelled", func(t *testing.T) {
 		t.Parallel()
-		ctx := context.WithValue(context.Background(), CorrelationID, "foobar")
+		ctx := context.WithValue(context.Background(), dtx.CorrelationID, "foobar")
 		var tr = transactioner{
 			attempt: func(ctx context.Context, key string) bool {
 				return false

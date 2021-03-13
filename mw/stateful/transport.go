@@ -4,6 +4,7 @@ import (
 	"context"
 	stdhttp "net/http"
 
+	"github.com/DoNewsCode/core/dtx"
 	"github.com/go-kit/kit/transport/grpc"
 	"github.com/go-kit/kit/transport/http"
 	"google.golang.org/grpc/metadata"
@@ -22,7 +23,7 @@ func HTTPToContext() http.RequestFunc {
 		if token == "" {
 			return ctx
 		}
-		return context.WithValue(ctx, CorrelationID, token)
+		return context.WithValue(ctx, dtx.CorrelationID, token)
 	}
 }
 
@@ -30,7 +31,7 @@ func HTTPToContext() http.RequestFunc {
 // useful for clients.
 func ContextToHTTP() http.RequestFunc {
 	return func(ctx context.Context, r *stdhttp.Request) context.Context {
-		token, ok := ctx.Value(CorrelationID).(string)
+		token, ok := ctx.Value(dtx.CorrelationID).(string)
 		if ok {
 			r.Header.Add(header, token)
 		}
@@ -50,7 +51,7 @@ func GRPCToContext() grpc.ServerRequestFunc {
 		if len(tokens) <= 0 {
 			return ctx
 		}
-		ctx = context.WithValue(ctx, CorrelationID, tokens[len(tokens)-1])
+		ctx = context.WithValue(ctx, dtx.CorrelationID, tokens[len(tokens)-1])
 		return ctx
 	}
 }
@@ -59,7 +60,7 @@ func GRPCToContext() grpc.ServerRequestFunc {
 // useful for clients.
 func ContextToGRPC() grpc.ClientRequestFunc {
 	return func(ctx context.Context, md *metadata.MD) context.Context {
-		token, ok := ctx.Value(CorrelationID).(string)
+		token, ok := ctx.Value(dtx.CorrelationID).(string)
 		if ok {
 			// capital "Key" is illegal in HTTP/2.
 			(*md)[headerHTTP2] = []string{token}

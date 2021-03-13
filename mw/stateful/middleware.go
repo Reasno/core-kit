@@ -2,6 +2,7 @@ package stateful
 
 import (
 	"context"
+	"github.com/DoNewsCode/core/dtx"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/pkg/errors"
@@ -22,7 +23,7 @@ type Oncer interface {
 func MakeIdempotence(s Oncer) endpoint.Middleware {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-			correlationID, ok := ctx.Value(CorrelationID).(string)
+			correlationID, ok := ctx.Value(dtx.CorrelationID).(string)
 			if !ok {
 				return e(ctx, request)
 			}
@@ -45,7 +46,7 @@ type Locker interface {
 func MakeLock(l Locker) endpoint.Middleware {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-			correlationID, ok := ctx.Value(CorrelationID).(string)
+			correlationID, ok := ctx.Value(dtx.CorrelationID).(string)
 			if !ok {
 				return e(ctx, request)
 			}
@@ -75,7 +76,7 @@ type Sequencer interface {
 func MakeAttempt(s Sequencer) endpoint.Middleware {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-			correlationID, ok := ctx.Value(CorrelationID).(string)
+			correlationID, ok := ctx.Value(dtx.CorrelationID).(string)
 			if !ok {
 				return e(ctx, request)
 			}
@@ -97,7 +98,7 @@ func MakeAttempt(s Sequencer) endpoint.Middleware {
 func MakeCancel(s Sequencer) endpoint.Middleware {
 	return func(e endpoint.Endpoint) endpoint.Endpoint {
 		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-			correlationID, ok := ctx.Value(CorrelationID).(string)
+			correlationID, ok := ctx.Value(dtx.CorrelationID).(string)
 			if !ok {
 				return e(ctx, request)
 			}
