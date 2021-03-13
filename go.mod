@@ -1,12 +1,13 @@
 module github.com/DoNewsCode/core-kit
 
-go 1.16
+go 1.14
 
 require (
-	github.com/DoNewsCode/core v0.4.0.alpha.1
+	github.com/DoNewsCode/core v0.3.1-0.20210313053525-57ef5ec5c139
 	github.com/go-kit/kit v0.10.0
 	github.com/go-redis/redis/v8 v8.6.0
 	github.com/golang/protobuf v1.4.3
+	github.com/gorilla/mux v1.8.0
 	github.com/oklog/run v1.1.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1

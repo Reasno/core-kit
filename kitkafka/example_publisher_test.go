@@ -8,9 +8,9 @@ import (
 	"fmt"
 
 	"github.com/DoNewsCode/core"
+	"github.com/DoNewsCode/core-kit/kitkafka"
 	"github.com/DoNewsCode/core/config"
 	"github.com/DoNewsCode/core/contract"
-	"github.com/DoNewsCode/core/kitkafka"
 	"github.com/DoNewsCode/core/otkafka"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"

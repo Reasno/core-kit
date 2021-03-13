@@ -3,11 +3,11 @@ package ots3
 import (
 	"context"
 	"fmt"
+	"github.com/DoNewsCode/core-kit/mw"
 	"github.com/DoNewsCode/core/ots3"
 
 	"github.com/DoNewsCode/core/contract"
 	"github.com/DoNewsCode/core/key"
-	"github.com/DoNewsCode/core/kitmw"
 	"github.com/DoNewsCode/core/unierr"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
@@ -62,8 +62,8 @@ func MakeUploadEndpoint(uploader Uploader) endpoint.Endpoint {
 // Middleware adds logging and error handling to the endpoint.
 func Middleware(logger log.Logger, env contract.Env) endpoint.Middleware {
 	keyer := key.New("module", "S3", "service", "upload")
-	l := kitmw.Log(logger, keyer, env.IsLocal())
-	e := kitmw.Error(kitmw.ErrorOption{
+	l := mw.Log(logger, keyer, env.IsLocal())
+	e := mw.Error(mw.ErrorOption{
 		AlwaysHTTP200: false,
 		ShouldRecover: env.IsProduction(),
 	})

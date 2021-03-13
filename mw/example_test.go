@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/DoNewsCode/core-kit/mw"
 	"github.com/DoNewsCode/core/key"
-	"github.com/DoNewsCode/core/kitmw"
 	"github.com/DoNewsCode/core/logging"
 	"github.com/go-kit/kit/endpoint"
 )
@@ -24,7 +24,7 @@ func ExampleError() {
 	_, err = original(context.Background(), nil)
 	fmt.Printf("%T\n", err)
 
-	wrapped = kitmw.Error(kitmw.ErrorOption{})(original)
+	wrapped = mw.Error(mw.ErrorOption{})(original)
 
 	_, err = wrapped(context.Background(), nil)
 	fmt.Printf("%T\n", err)
@@ -43,7 +43,7 @@ func ExampleLog() {
 		return "respData", nil
 	}
 
-	wrapped = kitmw.Log(
+	wrapped = mw.Log(
 		logging.NewLogger("json"),
 		key.New(),
 		false,
@@ -65,7 +65,7 @@ func ExampleRetry() {
 		return nil, errors.New("")
 	}
 
-	wrapped = kitmw.Retry(kitmw.RetryOption{
+	wrapped = mw.Retry(mw.RetryOption{
 		Max:     5,
 		Timeout: time.Second,
 	})(original)
@@ -94,7 +94,7 @@ func ExampleTimeout() {
 		}
 	}
 
-	wrapped = kitmw.Timeout(time.Microsecond)(original)
+	wrapped = mw.Timeout(time.Microsecond)(original)
 	_, err := wrapped(context.Background(), nil)
 	fmt.Println(err)
 
