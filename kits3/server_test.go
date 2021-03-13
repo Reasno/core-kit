@@ -1,6 +1,6 @@
 // +build integration
 
-package ots3
+package kits3
 
 import (
 	"context"

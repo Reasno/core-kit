@@ -1,4 +1,4 @@
-package ots3
+package kits3
 
 import (
 	"github.com/DoNewsCode/core/otkafka"

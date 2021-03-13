@@ -36,8 +36,8 @@ func Log(logger log.Logger, keyer contract.Keyer, printTrace bool) endpoint.Midd
 	}
 }
 
-// LabeledLogging returns a labeled version of logging middleware.
-func LabeledLogging(logger log.Logger, keyer contract.Keyer, printTrace bool) LabeledMiddleware {
+// LabeledLog returns a labeled version of logging middleware.
+func LabeledLog(logger log.Logger, keyer contract.Keyer, printTrace bool) LabeledMiddleware {
 	return func(method string, endpoint endpoint.Endpoint) endpoint.Endpoint {
 		return Log(logger, key.With(keyer, "method", method), printTrace)(endpoint)
 	}
