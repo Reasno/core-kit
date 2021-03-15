@@ -10,7 +10,7 @@ import (
 // Interceptor is a grpc UnaryInterceptor that injects the method name into
 // context so it can be consumed by Go kit gRPC middlewares. The Interceptor
 // typically is added at creation time of the grpc-go server.
-// Like this: `grpc.NewServer(grpc.UnaryInterceptor(kitmw.Interceptor))`
+// Like this: `grpc.NewServer(grpc.UnaryInterceptor(mw.Interceptor))`
 func Interceptor(
 	ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler,
 ) (resp interface{}, err error) {
