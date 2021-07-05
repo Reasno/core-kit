@@ -50,7 +50,7 @@ func Example_publisher() {
 	kafka.DialLeader(context.Background(), "tcp", "127.0.0.1:9092", "count", 0)
 
 	c := core.Default(core.SetConfigProvider(func(configStack []config.ProviderSet, configWatcher contract.ConfigWatcher) contract.ConfigAccessor {
-		return config.MapAdapter{"kafka.writer": map[string]otkafka.WriterConfig{
+		return config.MapAdapter{"env": "testing", "kafka.writer": map[string]otkafka.WriterConfig{
 			"uppercase": {
 				Brokers: []string{"127.0.0.1:9092"},
 				Topic:   "uppercase",
