@@ -1,9 +1,10 @@
 package kits3
 
 import (
-	"github.com/DoNewsCode/core/ots3"
 	"net/http"
 	"testing"
+
+	"github.com/DoNewsCode/core/ots3"
 
 	"github.com/DoNewsCode/core"
 	"github.com/gorilla/mux"

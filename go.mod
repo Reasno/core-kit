@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/DoNewsCode/core v0.7.1
 	github.com/go-kit/kit v0.11.0
+	github.com/go-kit/log v0.1.0
 	github.com/go-redis/redis/v8 v8.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0

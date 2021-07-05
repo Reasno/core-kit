@@ -1,11 +1,12 @@
 package kits3
 
 import (
-	"github.com/DoNewsCode/core/ots3"
 	"net/http"
 
+	"github.com/DoNewsCode/core/ots3"
+
 	"github.com/DoNewsCode/core/contract"
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 )
 
