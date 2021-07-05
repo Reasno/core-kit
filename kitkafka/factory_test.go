@@ -15,7 +15,7 @@ import (
 func TestNewSubscriber(t *testing.T) {
 	c := core.Default(
 		core.SetConfigProvider(func(configStack []config.ProviderSet, configWatcher contract.ConfigWatcher) contract.ConfigAccessor {
-			return config.MapAdapter{"kafka.reader": map[string]otkafka.ReaderConfig{
+			return config.MapAdapter{"env": "testing", "kafka.reader": map[string]otkafka.ReaderConfig{
 				"default": {
 					Brokers:     []string{"127.0.0.1:9092"},
 					GroupID:     "kitkafka",
