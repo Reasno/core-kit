@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/DoNewsCode/core/key"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/opentracing/opentracing-go/mocktracer"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +20,7 @@ func TestTraceServer(t *testing.T) {
 	original = func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		return nil, errors.New("")
 	}
-	wrapped = TraceServer(tracer, key.New())(original)
+	wrapped = TraceServer(tracer, "")(original)
 	wrapped(context.Background(), nil)
 	assert.NotEmpty(t, tracer.FinishedSpans())
 }

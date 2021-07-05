@@ -6,6 +6,7 @@ import (
 	"github.com/DoNewsCode/core/contract"
 	"github.com/DoNewsCode/core/key"
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/tracing/opentracing"
 	stdtracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 )
@@ -15,17 +16,32 @@ import (
 func LabeledTraceServer(tracer stdtracing.Tracer, keyer contract.Keyer) LabeledMiddleware {
 	return func(method string, endpoint endpoint.Endpoint) endpoint.Endpoint {
 		name := key.KeepOdd(keyer).Key(".", "method", method)
-		return TraceConsumer(tracer, name, ext.SpanKindRPCServerEnum)(endpoint)
+		return TraceServer(tracer, name)(endpoint)
 	}
 }
 
 // TraceServer returns a Middleware that wraps the `next` Endpoint in an
-// OpenTracing Span. The name of the operation is defined by contract.Keyer.
-func TraceServer(tracer stdtracing.Tracer, keyer contract.Keyer) endpoint.Middleware {
-	return func(endpoint endpoint.Endpoint) endpoint.Endpoint {
-		name := key.KeepOdd(keyer).Key(".")
-		return TraceConsumer(tracer, name, ext.SpanKindRPCServerEnum)(endpoint)
-	}
+// OpenTracing Span called `operationName`.
+//
+// If `ctx` already has a Span, it is re-used and the operation name is
+// overwritten. If `ctx` does not yet have a Span, one is created here.
+func TraceServer(tracer stdtracing.Tracer, operationName string, opts ...opentracing.EndpointOption) endpoint.Middleware {
+	opts = append(opts, opentracing.WithTags(map[string]interface{}{
+		ext.SpanKindRPCServer.Key: ext.SpanKindRPCServer.Value,
+	}))
+	return traceWithTags(tracer, operationName, opts...)
+}
+
+// TraceClient returns a Middleware that wraps the `next` Endpoint in an
+// OpenTracing Span called `operationName`.
+//
+// If `ctx` already has a Span, it is re-used and the operation name is
+// overwritten. If `ctx` does not yet have a Span, one is created here.
+func TraceClient(tracer stdtracing.Tracer, operationName string, opts ...opentracing.EndpointOption) endpoint.Middleware {
+	opts = append(opts, opentracing.WithTags(map[string]interface{}{
+		ext.SpanKindRPCServer.Key: ext.SpanKindRPCClient.Value,
+	}))
+	return traceWithTags(tracer, operationName, opts...)
 }
 
 // TraceConsumer returns a Middleware that wraps the `next` Endpoint in an
@@ -33,62 +49,35 @@ func TraceServer(tracer stdtracing.Tracer, keyer contract.Keyer) endpoint.Middle
 //
 // If `ctx` already has a Span, it is re-used and the operation name is
 // overwritten. If `ctx` does not yet have a Span, one is created here.
-func TraceConsumer(tracer stdtracing.Tracer, operationName string, kind ext.SpanKindEnum) endpoint.Middleware {
-	return func(next endpoint.Endpoint) endpoint.Endpoint {
-		return func(ctx context.Context, request interface{}) (interface{}, error) {
-			serverSpan := stdtracing.SpanFromContext(ctx)
-			if serverSpan == nil {
-				// All we can do is create a new root span.
-				serverSpan = tracer.StartSpan(operationName)
-			} else {
-				serverSpan.SetOperationName(operationName)
-			}
-			defer serverSpan.Finish()
-			ext.SpanKind.Set(serverSpan, kind)
-			if tenant, ok := ctx.Value(contract.TenantKey).(contract.Tenant); ok {
-				for k, v := range tenant.KV() {
-					serverSpan.SetTag(k, v)
-				}
-			}
-
-			transport, _ := ctx.Value(contract.TransportKey).(string)
-			serverSpan.SetTag("transport", transport)
-			requestUrl, _ := ctx.Value(contract.RequestUrlKey).(string)
-			serverSpan.SetTag("request.url", requestUrl)
-
-			ctx = stdtracing.ContextWithSpan(ctx, serverSpan)
-			resp, err := next(ctx, request)
-			if err != nil {
-				ext.Error.Set(serverSpan, true)
-			}
-
-			return resp, err
-		}
-	}
+func TraceConsumer(tracer stdtracing.Tracer, operationName string, opts ...opentracing.EndpointOption) endpoint.Middleware {
+	opts = append(opts, opentracing.WithTags(map[string]interface{}{
+		ext.SpanKindRPCServer.Key: ext.SpanKindConsumer.Value,
+	}))
+	return traceWithTags(tracer, operationName, opts...)
 }
 
 // TraceProducer returns a Middleware that wraps the `next` Endpoint in an
 // OpenTracing Span called `operationName`.
-func TraceProducer(tracer stdtracing.Tracer, operationName string, kind ext.SpanKindEnum) endpoint.Middleware {
-	return func(next endpoint.Endpoint) endpoint.Endpoint {
-		return func(ctx context.Context, request interface{}) (interface{}, error) {
-			var clientSpan stdtracing.Span
-			if parentSpan := stdtracing.SpanFromContext(ctx); parentSpan != nil {
-				clientSpan = tracer.StartSpan(
-					operationName,
-					stdtracing.ChildOf(parentSpan.Context()),
-				)
-			} else {
-				clientSpan = tracer.StartSpan(operationName)
+func TraceProducer(tracer stdtracing.Tracer, operationName string, opts ...opentracing.EndpointOption) endpoint.Middleware {
+	opts = append(opts, opentracing.WithTags(map[string]interface{}{
+		ext.SpanKindRPCServer.Key: ext.SpanKindProducer.Value,
+	}))
+	return traceWithTags(tracer, operationName, opts...)
+}
+
+func traceWithTags(tracer stdtracing.Tracer, operationName string, opts ...opentracing.EndpointOption) endpoint.Middleware {
+	opts = append(opts, opentracing.WithTagsFunc(func(ctx context.Context) stdtracing.Tags {
+		var tags = make(stdtracing.Tags)
+		transport, _ := ctx.Value(contract.TransportKey).(string)
+		tags["transport"] = transport
+		requestUrl, _ := ctx.Value(contract.RequestUrlKey).(string)
+		tags["request.url"] = requestUrl
+		if tenant, ok := ctx.Value(contract.TenantKey).(contract.Tenant); ok {
+			for k, v := range tenant.KV() {
+				tags[k] = v
 			}
-			defer clientSpan.Finish()
-			ext.SpanKind.Set(clientSpan, kind)
-			ctx = stdtracing.ContextWithSpan(ctx, clientSpan)
-			resp, err := next(ctx, request)
-			if err != nil {
-				ext.Error.Set(clientSpan, true)
-			}
-			return resp, err
 		}
-	}
+		return tags
+	}))
+	return opentracing.TraceEndpoint(tracer, operationName, opts...)
 }
