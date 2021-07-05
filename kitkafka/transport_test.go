@@ -23,7 +23,7 @@ func TestTransport(t *testing.T) {
 
 	c := core.Default(
 		core.SetConfigProvider(func(configStack []config.ProviderSet, configWatcher contract.ConfigWatcher) contract.ConfigAccessor {
-			return config.MapAdapter{"kafka.writer": map[string]otkafka.WriterConfig{
+			return config.MapAdapter{"env": "testing", "kafka.writer": map[string]otkafka.WriterConfig{
 				"default": {
 					Brokers: []string{"127.0.0.1:9092"},
 					Topic:   "test",
