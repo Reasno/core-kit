@@ -8,8 +8,8 @@ import (
 	"github.com/DoNewsCode/core/key"
 	"github.com/DoNewsCode/core/logging"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/pkg/errors"
 )
 

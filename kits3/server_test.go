@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/DoNewsCode/core/config"
-	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/go-kit/log"
 	"github.com/stretchr/testify/assert"
 )
 

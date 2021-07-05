@@ -18,7 +18,7 @@ import (
 	"github.com/DoNewsCode/core-kit/kitkafka"
 	"github.com/DoNewsCode/core/config"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/go-kit/kit/log"
+	"github.com/go-kit/log"
 	"github.com/segmentio/kafka-go"
 )
 
