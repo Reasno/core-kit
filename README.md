@@ -1,3 +1,7 @@
+<b>The maintenance of core-kit is discontinued. It should be trival to implement functionality contained in this package with the latest DoNewsCode/core.</b>
+
+----
+
 <div align="center">
   <h1>Core ❤️ Go Kit</h1>
   <p>
